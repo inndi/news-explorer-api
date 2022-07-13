@@ -1,0 +1,35 @@
+{
+  "name": "news-explorer-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "lint": "npx eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inndi/news-explorer-api.git"
+  },
+  "author": "Inna Spivakova",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/inndi/news-explorer-api/issues"
+  },
+  "homepage": "https://github.com/inndi/news-explorer-api#readme",
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^8.19.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "nodemon": "^2.0.19"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "gitignore": "^0.7.0",
+    "mongoose": "^6.4.4",
+    "validator": "^13.7.0"
+  }
+}
