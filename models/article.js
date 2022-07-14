@@ -43,7 +43,9 @@ const articleSchema = mongoose.Schema({
     }
   },
   owner: {
-    default: 'userId'////////////////////////////////////////
+    type: String,
+    required: true,
+    select: false
   }
 });
 
