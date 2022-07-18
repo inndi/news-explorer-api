@@ -1,17 +1,18 @@
-const Article = require('../controllers/articles');
+const Article = require('../models/article');
+const AppError = require('../errors/AppError');
 
-module.exports.getSavedArticles = (req, res, next) => {///////////////////////next
+module.exports.getSavedArticles = (req, res, next) => {
   Article.find({})
     .then((articles) => {
-      // if (!articles) {
-      //   throw new AppError(404, 'No articles found.');///////////////////
-      // }
+      if (!articles || articles.length === 0) {
+        throw new AppError(404, 'No articles found.');
+      }
       res.send(articles);
     })
-    .catch((err) => console.log(err));/////////////////////////
+    .catch(next);
 }
 
-module.exports.createArticle = (req, res, next) => {//////////////////next
+module.exports.createArticle = (req, res, next) => {
   const {
     keyword,
     title,
@@ -22,7 +23,7 @@ module.exports.createArticle = (req, res, next) => {//////////////////next
     image
   } = req.body;
 
-  const owner = req.user._id;////////////////////////
+  const owner = req.user._id;
 
   Article.create({
     keyword,
@@ -35,24 +36,36 @@ module.exports.createArticle = (req, res, next) => {//////////////////next
     owner
   })
     .then((article) => {
-      // if (!article) {
-      //   throw new AppError(400, 'Invalid data.');/////////////////////
-      // }
+      if (!article) {
+        throw new AppError(400, 'Invalid data.');
+      }
       res.send(article);
     })
-    .catch((err) => { console.log(err) });/////////////////////////
+    .catch(next);
 }
 
-module.exports.deleteArticle = (req, res, next) => {//////////////////next
-  const { id } = req.params;
-  const userId = req.user._id;//////////////////////////////////////
+module.exports.deleteArticle = (req, res, next) => {
+  const { articleId } = req.params;
+  const userId = req.user._id;
 
-  Article.findByIdAndRemove(id)
-    .then((removed) => {
-      // if (!removed) {
-      //   throw new AppError(403, 'Authorization required!');//////////////////
-      // }
-      res.send({ message: 'Article deleted!' });
+  Article.findById(articleId).select('owner')
+    .then((article) => {
+      if (!article) {
+        throw new AppError(404, 'No article with matching ID found');
+      }
+
+      if (article.owner === userId) {
+        Article.findByIdAndRemove(articleId)
+          .then((removed) => {
+            if (!removed) {
+              throw new AppError(401, 'Authorization required!');
+            }
+            res.send({ message: 'Article deleted!' });
+          })
+          .catch(next);
+      } else {
+        throw new AppError(401, 'Authorization required!');
+      }
     })
-    .catch((err) => { console.log(err) });///////////////////
+    .catch(next);
 }
