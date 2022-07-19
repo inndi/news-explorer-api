@@ -54,7 +54,7 @@ module.exports.deleteArticle = (req, res, next) => {
         throw new AppError(404, 'No article with matching ID found');
       }
 
-      if (article.owner === userId) {
+      if (article.owner == userId) {
         Article.findByIdAndRemove(articleId)
           .then((removed) => {
             if (!removed) {
