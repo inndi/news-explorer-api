@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 
@@ -20,14 +22,17 @@ const { requestLogger,
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(cors());
+app.options('*', cors());
+
 mongoose.connect('mongodb://localhost:27017/newsexplorer');
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6290ae8fb3ff4b8e7d9f2867',
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '6290ae8fb3ff4b8e7d9f2867',
+//   };
+//   next();
+// });
 
 app.use(requestLogger);
 app.use(helmet());
