@@ -3,7 +3,9 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 const AppError = require('../errors/AppError');
+
 const { NODE_ENV, JWT_SECRET } = process.env;
+const { errMessage } = require('../utils/constants');
 
 module.exports.getCurrentUser = (req, res, next) => {
   const id = req.user._id;
@@ -11,12 +13,12 @@ module.exports.getCurrentUser = (req, res, next) => {
   User.findById(id)
     .then((user) => {
       if (!user) {
-        throw new AppError(404, 'No user with matching ID found');
+        throw new AppError(404, errMessage.invalidUserId);
       }
-      res.send(user)
+      res.send(user);
     })
     .catch(next);
-}
+};
 
 module.exports.createUser = (req, res, next) => {
   const { email, password, name } = req.body;
@@ -25,12 +27,16 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({ email, password: hash, name }))
     .then((user) => {
       if (!user) {
-        throw new AppError(409, 'An email already exists');
+        throw new AppError(409, errMessage.existingEmail);
       }
-      res.send(user);
+      const newUser = user.toObject();
+      delete newUser.password;
+
+      res.send(newUser);
     })
-    .catch(next);
-}
+    .catch((err) => err.code === 11000
+      ? next(new AppError(409, errMessage.existingEmail)) : next(err));
+};
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -38,7 +44,7 @@ module.exports.login = (req, res, next) => {
   User.findUserByCredentials(email, password)
     .then((user) => {
       if (!user) {
-        throw new AppError(400, 'Incorrect password or email');
+        throw new AppError(401, errMessage.invalidCredentials);
       }
       const token = jwt.sign(
         { _id: user._id },
@@ -48,4 +54,4 @@ module.exports.login = (req, res, next) => {
       res.send(token);
     })
     .catch(next);
-}
+};

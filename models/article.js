@@ -4,23 +4,23 @@ const validator = require('validator');
 const articleSchema = mongoose.Schema({
   keyword: {
     type: String,
-    required: true
+    required: true,
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   text: {
     type: String,
-    required: true
+    required: true,
   },
   date: {
     type: String,
-    required: true
+    required: true,
   },
   source: {
     type: String,
-    required: true
+    required: true,
   },
   link: {
     type: String,
@@ -29,8 +29,8 @@ const articleSchema = mongoose.Schema({
       validator: function (v) {
         return validator.isURL(v);
       },
-      message: (props) => `${props.value} is not a valid link!`
-    }
+      message: (props) => `${props.value} is not a valid link!`,
+    },
   },
   image: {
     type: String,
@@ -39,14 +39,14 @@ const articleSchema = mongoose.Schema({
       validator: function (v) {
         return validator.isURL(v);
       },
-      message: (props) => `${props.value} is not a valid link!`
-    }
+      message: (props) => `${props.value} is not a valid link!`,
+    },
   },
   owner: {
     type: String,
     required: true,
-    select: false
-  }
+    select: false,
+  },
 });
 
 module.exports = mongoose.model('article', articleSchema);

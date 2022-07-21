@@ -1,4 +1,4 @@
-const AppError = require('../errors/AppError');
+const AppError = require('./AppError');
 
 const handleKnownError = (err, res) => {
   const { statusCode, message } = err;

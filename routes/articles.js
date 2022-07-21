@@ -7,7 +7,7 @@ const { getSavedArticles, createArticle, deleteArticle } = require('../controlle
 const validateURL = (value, helpers) => {
   if (validator.isURL(value)) {
     return value;
-  };
+  }
 
   return helpers.error('string.uri');
 };

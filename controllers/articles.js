@@ -1,16 +1,17 @@
 const Article = require('../models/article');
 const AppError = require('../errors/AppError');
+const { errMessage, resMessage } = require('../utils/constants');
 
 module.exports.getSavedArticles = (req, res, next) => {
   Article.find({})
     .then((articles) => {
       if (!articles || articles.length === 0) {
-        throw new AppError(404, 'No articles found.');
+        throw new AppError(404, errMessage.artNotFound);
       }
       res.send(articles);
     })
     .catch(next);
-}
+};
 
 module.exports.createArticle = (req, res, next) => {
   const {
@@ -20,7 +21,7 @@ module.exports.createArticle = (req, res, next) => {
     date,
     source,
     link,
-    image
+    image,
   } = req.body;
 
   const owner = req.user._id;
@@ -33,16 +34,16 @@ module.exports.createArticle = (req, res, next) => {
     source,
     link,
     image,
-    owner
+    owner,
   })
     .then((article) => {
       if (!article) {
-        throw new AppError(400, 'Invalid data.');
+        throw new AppError(400, errMessage.invalidData);
       }
       res.send(article);
     })
     .catch(next);
-}
+};
 
 module.exports.deleteArticle = (req, res, next) => {
   const { articleId } = req.params;
@@ -51,21 +52,21 @@ module.exports.deleteArticle = (req, res, next) => {
   Article.findById(articleId).select('owner')
     .then((article) => {
       if (!article) {
-        throw new AppError(404, 'No article with matching ID found');
+        throw new AppError(404, errMessage.invalidArtId);
       }
 
       if (article.owner == userId) {
         Article.findByIdAndRemove(articleId)
           .then((removed) => {
             if (!removed) {
-              throw new AppError(401, 'Authorization required!');
+              throw new AppError(401, errMessage.authRequired);
             }
-            res.send({ message: 'Article deleted!' });
+            res.send({ message: resMessage.successArtDeleting });
           })
           .catch(next);
       } else {
-        throw new AppError(401, 'Authorization required!');
+        throw new AppError(401, errMessage.authRequired);
       }
     })
     .catch(next);
-}
+};

@@ -16,8 +16,11 @@ const loginRouter = require('./routes/signin');
 const auth = require('./middlewares/auth');
 const AppError = require('./errors/AppError');
 const { handleError } = require('./errors/errorHandler');
-const { requestLogger,
-  errorLogger } = require('./middlewares/logger');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { limiter } = require('./middlewares/rateLimiter');
+const { errMessage } = require('./utils/constants');
+
+const { DB_ADDRESS } = process.env;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,17 +28,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.options('*', cors());
 
-mongoose.connect('mongodb://localhost:27017/newsexplorer');
-
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '6290ae8fb3ff4b8e7d9f2867',
-//   };
-//   next();
-// });
+mongoose.connect(DB_ADDRESS);
 
 app.use(requestLogger);
 app.use(helmet());
+app.use(limiter);
 
 app.use('/signup', registerRouter);
 app.use('/signin', loginRouter);
@@ -45,7 +42,7 @@ app.use(auth);
 app.use('/users', userRouter);
 app.use('/articles', articleRouter);
 
-app.get('*', (req, res) => next(new AppError(404, 'Requested resource not found')));
+app.get('*', (req, res) => next(new AppError(404, errMessage.invalidRoute)));
 
 app.use(errorLogger);
 app.use(errors());
