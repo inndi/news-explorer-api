@@ -55,7 +55,7 @@ module.exports.deleteArticle = (req, res, next) => {
         throw new AppError(404, errMessage.invalidArtId);
       }
 
-      if (article.owner == userId) {
+      if (userId === article.owner._id.toString()) {
         Article.findByIdAndRemove(articleId)
           .then((removed) => {
             if (!removed) {
