@@ -1,13 +1,13 @@
 const Article = require('../models/article');
 const AppError = require('../errors/AppError');
 const { errMessage, resMessage } = require('../utils/constants');
+const article = require('../models/article');
 
 module.exports.getSavedArticles = (req, res, next) => {
-  Article.find({})
+  const owner = req.user._id;
+  Article.find({}).select('+owner')
     .then((articles) => {
-      if (!articles || articles.length === 0) {
-        throw new AppError(404, errMessage.artNotFound);
-      }
+      articles = articles.filter((article) => article.owner === owner);
       res.send(articles);
     })
     .catch(next);
@@ -55,7 +55,7 @@ module.exports.deleteArticle = (req, res, next) => {
         throw new AppError(404, errMessage.invalidArtId);
       }
 
-      if (userId === article.owner._id.toString()) {
+      if (userId === article.owner) {
         Article.findByIdAndRemove(articleId)
           .then((removed) => {
             if (!removed) {
