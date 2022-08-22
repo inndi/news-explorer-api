@@ -34,6 +34,13 @@ app.use(requestLogger);
 app.use(helmet());
 app.use(limiter);
 
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '6290ae8fb3ff4b8e7d9f2867',
+//   };
+//   next();
+// });
+
 app.use('/signup', registerRouter);
 app.use('/signin', loginRouter);
 
@@ -48,7 +55,7 @@ app.use(errorLogger);
 app.use(errors());
 app.use((err, req, res, next) => { handleError(err, res); });
 
-const { PORT = 3001 } = process.env;
+const { PORT = 3003 } = process.env;
 
 app.listen(PORT, () => {
   console.log(`app listening on port ${PORT}`);
