@@ -25,8 +25,9 @@ const articleSchema = mongoose.Schema({
   link: {
     type: String,
     required: true,
+    unique: true,
     validate: {
-      validator: function (v) {
+      validator(v) {
         return validator.isURL(v);
       },
       message: (props) => `${props.value} is not a valid link!`,
@@ -36,7 +37,7 @@ const articleSchema = mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: function (v) {
+      validator(v) {
         return validator.isURL(v);
       },
       message: (props) => `${props.value} is not a valid link!`,
