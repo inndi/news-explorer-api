@@ -34,13 +34,6 @@ app.use(requestLogger);
 app.use(helmet());
 app.use(limiter);
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '6290ae8fb3ff4b8e7d9f2867',
-//   };
-//   next();
-// });
-
 app.use('/signup', registerRouter);
 app.use('/signin', loginRouter);
 
