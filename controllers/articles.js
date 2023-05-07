@@ -1,48 +1,49 @@
 const Article = require('../models/article');
 const AppError = require('../errors/AppError');
 const { errMessage, resMessage } = require('../utils/constants');
-const article = require('../models/article');
 
 module.exports.getSavedArticles = (req, res, next) => {
   const owner = req.user._id;
   Article.find({}).select('+owner')
     .then((articles) => {
-      articles = articles.filter((article) => article.owner === owner);
-      res.send(articles);
+      res.send(articles.filter((article) => article.owner === owner));
     })
     .catch(next);
 };
 
-module.exports.createArticle = (req, res, next) => {
-  const {
-    keyword,
-    title,
-    text,
-    date,
-    source,
-    link,
-    image,
-  } = req.body;
+module.exports.createArticle = async (req, res, next) => {
+  const amountOfSavedArticles = await Article.countDocuments({});
+  if ((amountOfSavedArticles) < 100) {
+    const {
+      keyword,
+      title,
+      text,
+      date,
+      source,
+      link,
+      image,
+    } = req.body;
 
-  const owner = req.user._id;
+    const owner = req.user._id;
 
-  Article.create({
-    keyword,
-    title,
-    text,
-    date,
-    source,
-    link,
-    image,
-    owner,
-  })
-    .then((article) => {
-      if (!article) {
-        throw new AppError(400, errMessage.invalidData);
-      }
-      res.send(article);
+    Article.create({
+      keyword,
+      title,
+      text,
+      date,
+      source,
+      link,
+      image,
+      owner,
     })
-    .catch(next);
+      .then((article) => {
+        if (!article) {
+          throw new AppError(400, errMessage.invalidData);
+        }
+        res.send(article);
+      })
+      .catch(next);
+  }
 };
 
 module.exports.deleteArticle = (req, res, next) => {
@@ -61,7 +62,7 @@ module.exports.deleteArticle = (req, res, next) => {
             if (!removed) {
               throw new AppError(401, errMessage.authRequired);
             }
-            res.send({ message: resMessage.successArtDeleting });
+            res.send({ message: resMessage.successArtDeleting, removedArticle: removed });
           })
           .catch(next);
       } else {
