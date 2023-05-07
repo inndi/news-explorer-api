@@ -6,7 +6,8 @@ const handleKnownError = (err, res) => {
 };
 
 const handleUnknownError = (err, res) => {
-  res.status(500).send({ message: 'An error occurred on the server' });
+  console.log(err);
+  res.status(500).send({ message: err });
 };
 
 module.exports.handleError = (err, res) => {
